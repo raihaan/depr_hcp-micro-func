@@ -1,0 +1,26 @@
+https://balsa.wustl.edu/file/show/3VLx is where i got glasser parcellation file
+info for spreadsheets below. generally, restricted data contains age, family info. unrestricted contains behav
+
+#test data
+testdata.csv - spreadsheet of 10 subjects only, for testing processing locally on my laptop
+#100 unrelated subjects data
+RESTRICTED_patelmo6_11_24_2020_11_59_6.csv - restricted data for 100 unrelated subjects
+unrestricted_patelmo6_11_24_2020_14_23_3.csv - unrestricted data for 100 unrelated subjects
+
+merged_sorted_patelmo6_11_24_2020.csv - merge of restricted and unrestricted data for 100 unrelated subjects, created with:
+python merge.py RESTRICTED_patelmo6_11_24_2020_11_59_6.csv unrestricted_patelmo6_11_24_2020_14_23_3.csv merged_sorted_patelmo6_11_24_2020.csv
+
+#all r277 recons data - 897 subjects total
+RESTRICTED_patelmo6_2_4_2021_9_31_7.csv - restricted data for 897 subjects with r277 recon, includes related subjects
+unrestricted_patelmo6_2_4_2021_10_21_41.csv - unrestricted data for 897 subjects with r277 recon, includes related subjects
+
+merged_sorted_r277all_n897_2_4_2021.csv - merge of restricted and unrestricted data for 897 subjects with r277 recon, includes related subjects, created with
+python merge.py RESTRICTED_patelmo6_2_4_2021_9_31_7.csv unrestricted_patelmo6_2_4_2021_10_21_41.csv merged_sorted_r277all_n897_2_4_2021.csv
+
+#create unrelated subjects list
+create_unrelated_sets.ipynb - using merged_sorted_r277all_n897_2_4_2021.csv creates 3 sets of unrelated subjects:
+merged_sorted_r277_unrelated_setA_n387.csv - main analysis set
+merged_sorted_r277_unrelated_setB_n305.csv - secondary analysis set (maybe validation?)
+merged_sorted_r277_unrelated_setC_n160.csv - tertiary analysis - dont forsee use for this yet
+
+setAlist.csv - first column (subject id column) of merged_sorted_r277_unrelated_setA_n387.csv, made manually w copypaste just for download subject lists
