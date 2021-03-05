@@ -1,0 +1,9 @@
+#Make individual subject joblists
+for subj in ../raw_data/structural/??????; do ./preproc.sh $subj; done
+
+#make joblists to submit
+for file in ??????/*joblist; do echo bash $file; done > preproc_joblist
+
+#submit
+module load cobralab/2019b
+qbatch -c 100 -w 00:15:00 preproc_joblist
