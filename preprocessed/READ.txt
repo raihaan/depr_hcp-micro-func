@@ -1,3 +1,13 @@
+This folder contains preprocessing to obtain
+a) mean t1t2 in atlas rois
+b) mean timeseries in atlas rois
+c) correlation matrices in .txt format
+d) euclid distance btwn parcels 
+
+
+preproc.sh - does most of the work. mix of bash, wb_command, python to obtain outputs. 
+preproc.sh is run per subject, points to raw data. creates a joblist for each subject which must be submitted to cluster
+
 #Make individual subject joblists
 for subj in ../raw_data/structural/??????; do ./preproc.sh $subj; done
 
