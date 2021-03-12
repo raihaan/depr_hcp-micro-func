@@ -23,4 +23,8 @@ merged_sorted_r277_unrelated_setA_n387.csv - main analysis set
 merged_sorted_r277_unrelated_setB_n305.csv - secondary analysis set (maybe validation?)
 merged_sorted_r277_unrelated_setC_n160.csv - tertiary analysis - dont forsee use for this yet
 
-setAlist.csv - first column (subject id column) of merged_sorted_r277_unrelated_setA_n387.csv, made manually w copypaste just for download subject lists
+** subjects 179548 and 650746 were initially placed in setA and do NOT have resting state processed data, or MSMALL structural. 
+** removing these two subjects manually from merged_sorted_r277_unrelated_setA_n387.csv to create:
+merged_sorted_r277_unrelated_setA_n385.csv - main analysis set (2021-03-12)
+
+setAlist.csv - first column (subject id column) of merged_sorted_r277_unrelated_setA_n385.csv, made manually w copypaste just for download subject lists
