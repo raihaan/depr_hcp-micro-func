@@ -66,9 +66,6 @@ echo wb_command -cifti-average ${rsfc_out_dir}/${subj}.rfMRI_REST1_avg.netmat.pc
 echo wb_command -cifti-convert -to-text ${rsfc_out_dir}/${subj}.rfMRI_REST1_avg.netmat.pconn.nii ${rsfc_out_dir}/${subj}.rfMRI_REST1.netmat.txt >> ${joblist}
 echo "" >> ${joblist}
 
-echo wb_command -cifti-average ${rsfc_out_dir}/${subj}.rfMRI_REST2_avg.netmat.pconn.nii -cifti ${rsfc_out_dir}/${subj}.rfMRI_REST2_LR.netmat.pconn.nii -cifti ${rsfc_out_dir}/${subj}.rfMRI_REST2_RL.netmat.pconn.nii >> ${joblist}
-echo wb_command -cifti-convert -to-text ${rsfc_out_dir}/${subj}.rfMRI_REST2_avg.netmat.pconn.nii ${rsfc_out_dir}/${subj}.rfMRI_REST2.netmat.txt >> ${joblist}
-
 echo "" >> ${joblist}
 echo "#now running t1t2 preproc" >> ${joblist}
 echo "" >> ${joblist}
