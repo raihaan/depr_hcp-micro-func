@@ -53,7 +53,7 @@ touch ${joblist}
 #use weighted avg based on surface file/vertex area
 #create rsfc mx from parcellated tseries (parcel-parcel connectivity mx)
 #convert to txt for general analysis
-for rs_run in {rfMRI_REST1_LR,rfMRI_REST1_RL,rfMRI_REST2_LR,rfMRI_REST2_RL}
+for rs_run in {rfMRI_REST1_LR,rfMRI_REST1_RL}
 do
 echo wb_command -cifti-parcellate ${raw_func_dir}/${rs_run}/${rs_run}_Atlas_MSMAll_hp2000_clean.dtseries.nii ${atlas_file} COLUMN ${rsfc_out_dir}/${subj}.${rs_run}.ptseries.nii -spatial-weights -left-area-surf ${left_surface} -right-area-surf ${right_surface} >> ${joblist}
 echo wb_command -cifti-correlation -mem-limit 2 ${rsfc_out_dir}/${subj}.${rs_run}.ptseries.nii ${rsfc_out_dir}/${subj}.${rs_run}.netmat.pconn.nii -fisher-z >> ${joblist}
