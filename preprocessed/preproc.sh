@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # ====================================================================== #
-# 2021_01_16 Raihaan Patel
+# 2021_03_12 Raihaan Patel
 # Creates individual command list file that is submitted by qbatch
 # run per subject: for subj in ../raw_data/structural/??????; do ./preproc.sh $subj; done
 # can then do the following to submit joblists for each subj: 
 # for file in ??????/*joblist; do echo bash $file; done > preproc_joblist
 # and
 # module load cobralab/2019b
-# qbatch -w 00:30:00 -c 50 rsfcpreproc_joblist
+# qbatch -w 00:30:00 -c 50 preproc_joblist
 #
 # Performs commands needed to parcellate rsfc surface data according to an atlas
 # Mean rsfc in each region is taken
