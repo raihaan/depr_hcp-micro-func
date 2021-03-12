@@ -79,20 +79,20 @@ t1t2_out_dir="${subj}/t1t2/"
 mkdir -p $t1t2_out_dir
 
 #define input files
-raw_t1t2="${raw_struct_dir}/${subj}/MNINonLinear/fsaverage_LR32k/${subj}.MyelinMap_BC_MSMAll.32k_fs_LR.dscalar.nii"
-parcellated_t1t2="${t1t2_out_dir}/${subj}.weighted.parcellated.t1t2.pscalar.nii"
-parcellated_t1t2_txt="${t1t2_out_dir}/${subj}.weighted.parcellated.t1t2.txt"
+raw_t1t2_bc="${raw_struct_dir}/${subj}/MNINonLinear/fsaverage_LR32k/${subj}.MyelinMap_BC_MSMAll.32k_fs_LR.dscalar.nii"
+parcellated_t1t2_bc="${t1t2_out_dir}/${subj}.weighted.parcellated.t1t2_bc.pscalar.nii"
+parcellated_t1t2_bc_txt="${t1t2_out_dir}/${subj}.weighted.parcellated.t1t2_bc.txt"
 
 #parcellate the raw t1t2 file according to Glasser atlas
 #take the mean of t1t2 vals in each parcels
 #weight vertices according to their vertex area -> larger vertices contribute more
-echo wb_command -cifti-parcellate ${raw_t1t2} ${atlas_file} COLUMN ${parcellated_t1t2} -method MEAN -spatial-weights -left-area-surf ${left_surface} -right-area-surf ${right_surface} >> ${joblist}
+echo wb_command -cifti-parcellate ${raw_t1t2_bc} ${atlas_file} COLUMN ${parcellated_t1t2_bc} -method MEAN -spatial-weights -left-area-surf ${left_surface} -right-area-surf ${right_surface} >> ${joblist}
 
 #add a space betwn commands because im blind
 echo "" >> ${joblist} 
 
 #convert to .txt file for python processing
-echo wb_command -cifti-convert -to-text ${parcellated_t1t2} ${parcellated_t1t2_txt} >> ${joblist}
+echo wb_command -cifti-convert -to-text ${parcellated_t1t2_bc} ${parcellated_t1t2_bc_txt} >> ${joblist}
 
 echo "" >> ${joblist}
 echo "#now running distance preproc" >> ${joblist}
