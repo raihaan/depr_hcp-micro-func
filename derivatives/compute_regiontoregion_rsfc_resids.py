@@ -34,6 +34,14 @@ def get_resids(x, y):
     resid = y - regr.predict(x)
     return resid #has shape (n_samples,1)
 
+def measure_distance_effect(raw,corrected,distance):
+    metrics_list=[]
+    metrics_list.append(np.corrcoef(raw,corrected)[0,1]) #correlate raw and corrected
+    metrics_list.append(np.corrcoef(raw,distance)[0,1]) #correlate raw and distance
+    metrics_list.append(np.corrcoef(corrected,distance)[0,1]) #correlate corrected distance
+    metrics_list.append(mean_squared_error(raw, corrected)) #mean sq error
+    return metrics_list
+
 rsfc_resid_t1t2_out = 'rsfc_resid/t1t2/'
 if not os.path.exists(rsfc_resid_t1t2_out):
     os.makedirs(rsfc_resid_t1t2_out)
@@ -50,6 +58,7 @@ n_region_pairs = int((n_regions**2-n_regions)/2)
 #compute diff map for each subject
 dict_t1t2_diffmap={}
 dict_t1t2_diffmap_euclid={}
+dict_t1t2_distance_effects={}
 for subj in subject_list:
     t1t2 = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated.t1t2.txt')
     #create a diff map - abs val of delta t1t2 btwn all region pairs
@@ -67,12 +76,25 @@ for subj in subject_list:
     y = unwarp_to_vector(diff_map).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
     diff_regresseuclid = get_resids(x,y)
     dict_t1t2_diffmap_euclid[str(subj)] = recover_matrix(diff_regresseuclid.flatten(),n_regions).copy()
+
+    #get distance effects on raw and corrected data
+    dict_t1t2_distance_effects[str(subj)] = measure_distance_effect(
+        raw = unwarp_to_vector(dict_t1t2_diffmap[str(subj)]),
+        corrected = unwarp_to_vector(dict_t1t2_diffmap_euclid[str(subj)]),
+        distance = euclid_unwrap)
     
     del t1t2, diff_map, euclid_mx, euclid_unwrap, diff_regresseuclid
+
+#create dataframe containing one row for each subject, one col for each t1t2~distance metric
+t1t2_distance_df=pd.DataFrame.from_dict(
+    dict_t1t2_distance_effects,orient='index',columns=[
+        'T1T2_corr_T1T2corrected','T1T2_corr_euclid','T1T2corrected_corr_euclid','T1T2_T1T2corrected_mse'])
+t1t2_distance_df.index.name='Subject'
 
 #get rsfc for each subject
 dict_rsfc = {}
 dict_rsfc_euclid = {}
+dict_rsfc_distance_effects={}
 for subj in subject_list:
     rsfc=np.loadtxt('../preprocessed/' + str(subj) + '/rsfc/' + str(subj) + '.rfMRI_REST1.netmat.txt')
     np.fill_diagonal(rsfc,0)
@@ -85,7 +107,23 @@ for subj in subject_list:
     y = unwarp_to_vector(rsfc).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
     rsfc_regresseuclid = get_resids(x,y)
     dict_rsfc_euclid[str(subj)] = recover_matrix(rsfc_regresseuclid.flatten(),n_regions).copy()
+
+    #get distance effects on raw and corrected data
+    dict_rsfc_distance_effects[str(subj)] = measure_distance_effect(
+        raw = unwarp_to_vector(dict_rsfc[str(subj)]),
+        corrected = unwarp_to_vector(dict_rsfc_euclid[str(subj)]),
+        distance = euclid_unwrap)
     del rsfc, euclid_mx, euclid_unwrap,rsfc_regresseuclid
+
+#create dataframe containing one row for each subject, one col for each t1t2~distance metric
+rsfc_distance_df=pd.DataFrame.from_dict(
+    dict_rsfc_distance_effects,orient='index',columns=[
+        'RSFC_corr_RSFCcorrected','RSFC_corr_euclid','RSFCcorrected_corr_euclid','RSFC_RSFCcorrected_mse'])
+rsfc_distance_df.index.name='Subject'
+
+#merge and write out t1t2 and rsfc distance dfs
+distance_df = t1t2_distance_df.merge(rsfc_distance_df, how='inner', on='Subject')
+distance_df.round(5).to_csv('distance_metrics.csv') #round to 5 sig digits for output
 
     
 #get group avg rsfc matrix
