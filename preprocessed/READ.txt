@@ -16,4 +16,4 @@ for file in ??????/*joblist; do echo bash $file; done > preproc_joblist
 
 #submit
 module load cobralab/2019b
-qbatch -c 100 -w 00:15:00 preproc_joblist
+qbatch -c 100 -w 00:15:00 preproc_joblist #submitted 17:08 2021-03-12
