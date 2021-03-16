@@ -33,7 +33,7 @@ def recover_matrix(FC_vector,num_roi):
 def get_resids(x, y):
     regr = LinearRegression().fit(x,y)
     resid = y - regr.predict(x)
-    return resid #has shape (n_samples,1)
+    return resid.reshape(-1,1) #has shape (n_samples,1)
 
 def measure_distance_effect(raw,corrected,distance):
     metrics_list=[]
@@ -187,7 +187,7 @@ demo_data = np.concatenate((age,sex),axis=1)
 
 age = df['Age_in_Yrs'].values.reshape(-1, 1)
 for roiroi in range(0,n_region_pairs):
-    x = diff_map_unwrap_euclid_mx[:,roiroi].reshape(-1, 1); y = rsfc_unwrap_euclid_mx[:,roiroi].reshape(-1, 1)
+    x = diff_map_unwrap_euclid_mx[:,roiroi].reshape(-1, 1); y = rsfc_unwrap_euclid_mx[:,roiroi]
     x = np.concatenate((x,demo_data),axis=1)
     if roiroi == 0:
         rsfc_resid_t1t2_age_sex = get_resids(x,y)
