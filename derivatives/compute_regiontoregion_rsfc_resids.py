@@ -74,7 +74,7 @@ for subj in subject_list:
     euclid_unwrap = unwarp_to_vector(euclid_mx)
     #regress distance against t1t2 diff, store the adjusted diff map for later
     y = unwarp_to_vector(diff_map).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
-    diff_regresseuclid = get_resids(x,y)
+    diff_regresseuclid, coeff = get_resids(x,y)
     dict_t1t2_diffmap_euclid[str(subj)] = recover_matrix(diff_regresseuclid.flatten(),n_regions).copy()
 
     #get distance effects on raw and corrected data
@@ -105,7 +105,7 @@ for subj in subject_list:
     euclid_unwrap = unwarp_to_vector(euclid_mx)
     #regress distance against t1t2 diff, store the adjusted diff map for later
     y = unwarp_to_vector(rsfc).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
-    rsfc_regresseuclid = get_resids(x,y)
+    rsfc_regresseuclid, coeff = get_resids(x,y)
     dict_rsfc_euclid[str(subj)] = recover_matrix(rsfc_regresseuclid.flatten(),n_regions).copy()
 
     #get distance effects on raw and corrected data
