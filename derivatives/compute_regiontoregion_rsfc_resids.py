@@ -33,7 +33,7 @@ def recover_matrix(FC_vector,num_roi):
 def get_resids(x, y):
     regr = LinearRegression().fit(x,y)
     resid = y - regr.predict(x)
-    return resid.reshape(-1,1) #has shape (n_samples,1)
+    return resid.reshape(-1,1), regr.coef_ #has shape (n_samples,1)
 
 def measure_distance_effect(raw,corrected,distance):
     metrics_list=[]
@@ -186,13 +186,22 @@ sex[np.where(sex_string=='M'),0]=1
 demo_data = np.concatenate((age,sex),axis=1)
 
 age = df['Age_in_Yrs'].values.reshape(-1, 1)
+betas_vector = np.zeros((n_region_pairs,1)) #array for tracking coefficient of delta t1t2 in regression on each region pair
 for roiroi in range(0,n_region_pairs):
+    #get rsfc and delta t1t2 data
     x = diff_map_unwrap_euclid_mx[:,roiroi].reshape(-1, 1); y = rsfc_unwrap_euclid_mx[:,roiroi]
-    x = np.concatenate((x,demo_data),axis=1)
+    x = np.concatenate((x,demo_data),axis=1) #append demographic (Age,sex) data
     if roiroi == 0:
-        rsfc_resid_t1t2_age_sex = get_resids(x,y)
+        rsfc_resid_t1t2_age_sex, coeff = get_resids(x,y) #compute residuals and get model coefficient 
     else:
-        rsfc_resid_t1t2_age_sex = np.concatenate((rsfc_resid_t1t2_age_sex, get_resids(x,y)), axis=1)
+        rsfc_resids, coeff = get_resids(x,y)
+        rsfc_resid_t1t2_age_sex = np.concatenate((rsfc_resid_t1t2_age_sex, rsfc_resids), axis=1)
+    betas_vector[roiroi,0] = coeff[0] #store coefficient
+
+#recast beta vector to matrix (n_regions x n_regions) form and save
+betas_mx = recover_matrix(betas_vector.flatten(),360) 
+fname=rsfc_resid_t1t2_age_sex_out + 't1t2_betas_mx.txt'
+np.savetxt(fname,rsfc_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt='%f')
 
 #now apply mask
 valid_idx = np.where(rsfc_threshold_mask > 0)
