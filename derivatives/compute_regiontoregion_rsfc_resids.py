@@ -5,7 +5,7 @@ import scipy
 from scipy.io import savemat
 from sklearn.linear_model import LinearRegression
 
-df=pd.read_csv('../raw_data/merged_sorted_patelmo6_11_24_2020.csv')
+df=pd.read_csv('../raw_data/merged_sorted_r277_unrelated_setA_n384.csv')
 
 
 def cumul(n): #thanks Gabe DG
