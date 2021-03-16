@@ -153,6 +153,11 @@ for subj in subject_list:
 
 print(np.shape(diff_map_unwrap_mx), np.shape(rsfc_unwrap_mx))
 
+fname=rsfc_resid_t1t2_age_sex_out + 'diffmap_unwrap.txt'
+np.savetxt(fname,diff_map_unwrap_mx.astype('float32'),delimiter='\t',fmt='%f')
+fname=rsfc_resid_t1t2_age_sex_out + 'rsfc_unwrap.txt'
+np.savetxt(fname,rsfc_unwrap_mx.astype('float32'),delimiter='\t',fmt='%f')
+
 for subj in subject_list:    
     diff_map = dict_t1t2_diffmap_euclid[str(subj)] #t1t2
     diffmap_unwrap_euclid = unwarp_to_vector(diff_map).reshape(1,n_region_pairs)
@@ -166,6 +171,11 @@ for subj in subject_list:
     else:
         diff_map_unwrap_euclid_mx = np.concatenate((diff_map_unwrap_euclid_mx,diffmap_unwrap_euclid),axis=0)
         rsfc_unwrap_euclid_mx = np.concatenate((rsfc_unwrap_euclid_mx,rsfc_unwrap_euclid),axis=0)
+
+fname=rsfc_resid_t1t2_age_sex_out + 'diffmap_unwrap_euclid.txt'
+np.savetxt(fname,diff_map_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt='%f')
+fname=rsfc_resid_t1t2_age_sex_out + 'rsfc_unwrap_euclid.txt'
+np.savetxt(fname,rsfc_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt='%f')
 
 #now regress for t1t2, age, sex    
 age = df['Age_in_Yrs'].values.reshape(-1, 1)
