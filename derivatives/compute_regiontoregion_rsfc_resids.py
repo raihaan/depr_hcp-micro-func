@@ -4,6 +4,7 @@ import pandas as pd
 import scipy
 from scipy.io import savemat
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 df=pd.read_csv('../raw_data/merged_sorted_r277_unrelated_setA_n384.csv')
 
