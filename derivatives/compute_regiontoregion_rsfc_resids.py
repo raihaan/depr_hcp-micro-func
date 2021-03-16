@@ -42,10 +42,6 @@ def measure_distance_effect(raw,corrected,distance):
     metrics_list.append(mean_squared_error(raw, corrected)) #mean sq error
     return metrics_list
 
-rsfc_resid_t1t2_out = 'rsfc_resid/t1t2/'
-if not os.path.exists(rsfc_resid_t1t2_out):
-    os.makedirs(rsfc_resid_t1t2_out)
-    
 rsfc_resid_t1t2_age_sex_out = 'rsfc_resid/t1t2-age-sex/'
 if not os.path.exists(rsfc_resid_t1t2_age_sex_out):
     os.makedirs(rsfc_resid_t1t2_age_sex_out)
