@@ -205,7 +205,7 @@ np.savetxt(fname,rsfc_resid_t1t2_age_sex.astype('float32'),delimiter='\t',fmt='%
 #recast beta vector to matrix (n_regions x n_regions) form and save
 betas_mx = recover_matrix(betas_vector.flatten(),360) 
 fname=rsfc_resid_t1t2_age_sex_out + 't1t2_betas_resid_age_sex_mx.txt'
-np.savetxt(fname,rsfc_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt='%f')
+np.savetxt(fname,betas_mx.astype('float32'),delimiter='\t',fmt='%f')
 
 #now apply mask
 valid_idx = np.where(rsfc_threshold_mask > 0)
