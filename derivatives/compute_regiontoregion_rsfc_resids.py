@@ -47,6 +47,9 @@ rsfc_resid_t1t2_age_sex_out = 'rsfc_resid/t1t2-age-sex/'
 if not os.path.exists(rsfc_resid_t1t2_age_sex_out):
     os.makedirs(rsfc_resid_t1t2_age_sex_out)
 
+rsfc_resid_t1t2_out = 'rsfc_resid/t1t2/'
+if not os.path.exists(rsfc_resid_t1t2_out):
+    os.makedirs(rsfc_resid_t1t2_out)
 
 subject_list=df['Subject'].values 
 n_regions=360
@@ -178,7 +181,56 @@ np.savetxt(fname,diff_map_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt=
 fname=rsfc_resid_t1t2_age_sex_out + 'rsfc_unwrap_euclid.txt'
 np.savetxt(fname,rsfc_unwrap_euclid_mx.astype('float32'),delimiter='\t',fmt='%f')
 
-#now regress for t1t2, age, sex    
+#now regress for delta t1t2
+#now regress for t1t2 
+betas_vector = np.zeros((n_region_pairs,1)) #array for tracking coefficient of delta t1t2 in regression on each region pair
+for roiroi in range(0,n_region_pairs):
+    #get rsfc and delta t1t2 data
+    x = diff_map_unwrap_euclid_mx[:,roiroi].reshape(-1, 1); y = rsfc_unwrap_euclid_mx[:,roiroi]
+    if roiroi == 0:
+        rsfc_resid_t1t2, coeff = get_resids(x,y) #compute residuals and get model coefficient 
+    else:
+        rsfc_resids, coeff = get_resids(x,y)
+        rsfc_resid_t1t2 = np.concatenate((rsfc_resid_t1t2, rsfc_resids), axis=1)
+    betas_vector[roiroi,0] = coeff[0] #store coefficient
+
+#save raw residuals
+fname=rsfc_resid_t1t2_out + 'raw_subjectsbyregionpairs.rsfc.residt1t2.txt'
+np.savetxt(fname,rsfc_resid_t1t2.astype('float32'),delimiter='\t',fmt='%f')
+
+#recast beta vector to matrix (n_regions x n_regions) form and save
+betas_mx = recover_matrix(betas_vector.flatten(),n_regions) 
+fname=rsfc_resid_t1t2_out + 't1t2_betas_mx.txt'
+np.savetxt(fname,betas_mx.astype('float32'),delimiter='\t',fmt='%f')
+
+#now apply mask
+valid_idx = np.where(rsfc_threshold_mask > 0)
+rsfc_resid_t1t2_thresh = rsfc_resid_t1t2[:,valid_idx[0]].copy()
+    
+rsfc_resid_t1t2_thresh_shift = rsfc_resid_t1t2_thresh - np.min(rsfc_resid_t1t2_thresh) #shift for nmf
+#save the residualized data to .mat for nmf
+#nmf wants region by subjects, so transpose
+print("saving", np.shape(np.transpose(rsfc_resid_t1t2_thresh_shift)), "nmf with min", np.min(rsfc_resid_t1t2_thresh_shift))
+savemat(rsfc_resid_t1t2_out + "nmf_regionpairsbysubjects.rsfc.residt1t2_shift.mat", {"X": np.transpose(rsfc_resid_t1t2_thresh_shift)}) 
+
+#save the residualized data to .mat for nmf. save unshifted for stability
+#nmf wants region by subjects, so transpose
+print("saving", np.shape(np.transpose(rsfc_resid_t1t2_thresh)), "nmf with min", np.min(rsfc_resid_t1t2_thresh))
+savemat(rsfc_resid_t1t2_out + "nmf_regionpairsbysubjects.rsfc.residt1t2.mat", {"X": np.transpose(rsfc_resid_t1t2_thresh)}) 
+
+#write out .txt file per subject
+for subj in range(0,np.shape(rsfc_resid_t1t2)[0]):
+    rsfc_resid_mx = recover_matrix(rsfc_resid_t1t2[subj,:], n_regions)
+    #write out
+    fname=rsfc_resid_t1t2_out + str(subject_list[subj]) + '.rsfc_mx.residt1t2.txt'
+    np.savetxt(fname,rsfc_resid_mx.astype('float32'),delimiter='\t',fmt='%f')
+del rsfc_resid_t1t2, betas_vector, betas_mx, rsfc_resid_t1t2_thresh, rsfc_resid_t1t2_thresh_shift
+
+
+
+
+
+#now regress for delta t1t2, age, sex    
 age = df['Age_in_Yrs'].values.reshape(-1, 1)
 sex_string=df['Gender'].values.reshape(-1, 1)
 sex = np.zeros_like(sex_string)
