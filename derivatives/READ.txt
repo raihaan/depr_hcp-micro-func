@@ -1,1 +1,2 @@
-qbatch -c 1 -w 01:00:00 joblist_compute_regiontoregion
+module load cobralab/2019b
+qbatch -c 1 -w 02:00:00 joblist_compute_regiontoregion
