@@ -50,6 +50,7 @@ if not os.path.exists(t1t2corrrsfc_out_dir):
     os.makedirs(t1t2corrrsfc_out_dir)
 
 dict_t1t2_diffmap={}
+dict_t1t2_diffmap_euclid={}
 n_regions=360
 
 #compute diff map for each subject
@@ -65,6 +66,14 @@ for subj in subject_list:
     #save a copy of the diff map for each subject
     fname = t1t2_out_dir + str(subj) + '.t1t2.absdiffmap.txt'
     np.savetxt(fname,diff_map.astype('float32'),delimiter='\t',fmt='%f')
+
+    #now regress out euclidean distance. load the distance data
+    euclid_mx = np.loadtxt('../preprocessed/' + str(subj) + '/distance/' + str(subj) + '.euclid_mx.txt')
+    euclid_unwrap = unwarp_to_vector(euclid_mx)
+    #regress distance against t1t2 diff, store the adjusted diff map for later
+    y = unwarp_to_vector(diff_map).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
+    diff_regresseuclid, coeff = get_resids(x,y)
+    dict_t1t2_diffmap_euclid[str(subj)] = recover_matrix(diff_regresseuclid.flatten(),n_regions).copy()
     del t1t2, diff_map
 
 #compute group avg
@@ -74,6 +83,15 @@ for subj in subject_list[1:]:
     groupavg_diffmap = np.add(groupavg_diffmap, dict_t1t2_diffmap[str(subj)])
 groupavg_diffmap=np.divide(groupavg_diffmap, n_subjects)
 fname = t1t2_out_dir + 'groupavg.t1t2.absdiffmap.txt'
+np.savetxt(fname,groupavg_diffmap.astype('float32'),delimiter='\t',fmt='%f')
+
+#repeat for distance corrected
+del groupavg_diffmap
+groupavg_diffmap = dict_t1t2_diffmap_euclid[str(subject_list[0])].copy()
+for subj in subject_list[1:]:
+    groupavg_diffmap = np.add(groupavg_diffmap, dict_t1t2_diffmap_euclid[str(subj)])
+groupavg_diffmap=np.divide(groupavg_diffmap, n_subjects)
+fname = t1t2_out_dir + 'groupavg.t1t2_euclid.absdiffmap.txt'
 np.savetxt(fname,groupavg_diffmap.astype('float32'),delimiter='\t',fmt='%f')
 
 #load rsfc for each subject
