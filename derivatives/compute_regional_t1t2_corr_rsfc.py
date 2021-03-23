@@ -101,28 +101,3 @@ np.savetxt(t1t2corrrsfc_out_dir + 'groupstd.regional.t1t2_corr_rsfc.txt',groupst
 grouprelstd_t1t2_rsfc_corr = np.abs(np.divide(groupstd_t1t2_rsfc_corr,groupmean_t1t2_rsfc_corr))
 np.savetxt(t1t2corrrsfc_out_dir + 'grouprelativestd.regional.t1t2_corr_rsfc.txt',grouprelstd_t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
     
-#group_t1t2_rsfc_corr is n_regions x n_subjects but will have neg values
-#shift it to make positive, then save
-
-nmf_group_t1t2_rsfc_corr_shifted = group_t1t2_rsfc_corr - np.min(group_t1t2_rsfc_corr)
-np.savetxt(t1t2corrrsfc_out_dir + 'nmf_regionxsubjects.shifted.t1t2_corr_rsfc.txt',nmf_group_t1t2_rsfc_corr_shifted.astype('float32'),delimiter='\t',fmt='%f')
-
-#invert...the corrs that are -ve in this case are maybe more interesting. so *-1, then shift
-group_t1t2_rsfc_corr_flipped = np.multiply(group_t1t2_rsfc_corr,-1)
-nmf_group_t1t2_rsfc_corr_flipped_shifted = group_t1t2_rsfc_corr_flipped - np.min(group_t1t2_rsfc_corr_flipped)
-np.savetxt(t1t2corrrsfc_out_dir + 'nmf_regionxsubjects.flipped.shifted.t1t2_corr_rsfc.txt',nmf_group_t1t2_rsfc_corr_flipped_shifted.astype('float32'),delimiter='\t',fmt='%f')
-    
-#save a version thats just the abs val as well    
-nmf_group_t1t2_rsfc_corr_abs = np.abs(group_t1t2_rsfc_corr)
-np.savetxt(t1t2corrrsfc_out_dir + 'nmf_regionxsubjects.abs.t1t2_corr_rsfc.txt',nmf_group_t1t2_rsfc_corr_abs.astype('float32'),delimiter='\t',fmt='%f')
-
-savemat(t1t2corrrsfc_out_dir + "nmf_regionxsubjects.shifted.t1t2_corr_rsfc.mat", {"X": nmf_group_t1t2_rsfc_corr_shifted})
-savemat(t1t2corrrsfc_out_dir + "nmf_regionxsubjects.shifted.t1t2_corr_rsfc.mat", {"X": nmf_group_t1t2_rsfc_corr_shifted})
-savemat(t1t2corrrsfc_out_dir + "nmf_regionxsubjects.flipped.shifted.t1t2_corr_rsfc.mat", {"X": nmf_group_t1t2_rsfc_corr_flipped_shifted})
-    
-    
-    
-    
-    
-
-
