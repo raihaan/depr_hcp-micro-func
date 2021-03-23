@@ -96,10 +96,19 @@ np.savetxt(fname,groupavg_diffmap.astype('float32'),delimiter='\t',fmt='%f')
 
 #load rsfc for each subject
 dict_rsfc = {}
+dict_rsfc_euclid = {}
 for subj in subject_list:
     rsfc=np.loadtxt('../preprocessed/' + str(subj) + '/rsfc/' + str(subj) + '.rfMRI_REST1.netmat.txt')
     np.fill_diagonal(rsfc,0)
     dict_rsfc[str(subj)]=rsfc.copy()
+
+    #now regress out euclidean distance. load the distance data
+    euclid_mx = np.loadtxt('../preprocessed/' + str(subj) + '/distance/' + str(subj) + '.euclid_mx.txt')
+    euclid_unwrap = unwarp_to_vector(euclid_mx)
+    #regress distance against t1t2 diff, store the adjusted diff map for later
+    y = unwarp_to_vector(rsfc).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
+    rsfc_regresseuclid, coeff = get_resids(x,y)
+    dict_rsfc_euclid[str(subj)] = recover_matrix(rsfc_regresseuclid.flatten(),n_regions).copy()
     del rsfc
 
 #compute group avg
@@ -109,6 +118,17 @@ for subj in subject_list[1:]:
 groupavg_rsfc=np.divide(groupavg_rsfc, n_subjects)
 fname = rsfc_out_dir + 'groupavg.rsfc.txt'
 np.savetxt(fname,groupavg_rsfc.astype('float32'),delimiter='\t',fmt='%f')
+del groupavg_rsfc
+
+#repeat for distance corrected rsfct
+groupavg_rsfc = dict_rsfc_euclid[str(subject_list[0])].copy()
+for subj in subject_list[1:]:
+    groupavg_rsfc = np.add(groupavg_rsfc, dict_rsfc_euclid[str(subj)])
+groupavg_rsfc=np.divide(groupavg_rsfc, n_subjects)
+fname = rsfc_out_dir + 'groupavg.rsfc_euclid.txt'
+np.savetxt(fname,groupavg_rsfc.astype('float32'),delimiter='\t',fmt='%f')
+
+
 
 #compute corr btwn deltaT1T2 and RSFC
 subj=subject_list[0]
