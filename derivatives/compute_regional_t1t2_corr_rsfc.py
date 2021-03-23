@@ -27,7 +27,7 @@ n_regions=360
 
 #compute diff map for each subject
 for subj in subject_list:
-    t1t2 = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated.t1t2.txt')
+    t1t2 = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated_bc.t1t2.txt')
     #create a diff map - abs val of delta t1t2 btwn all region pairs
     diff_map = np.zeros((n_regions,n_regions))
     print(np.shape(diff_map))
@@ -49,12 +49,6 @@ groupavg_diffmap=np.divide(groupavg_diffmap, n_subjects)
 fname = t1t2_out_dir + 'groupavg.t1t2.absdiffmap.txt'
 np.savetxt(fname,groupavg_diffmap.astype('float32'),delimiter='\t',fmt='%f')
 
-plt.figure(figsize=(2.5,2),dpi=200)
-plt.imshow(groupavg_diffmap,vmin=0,vmax=0.5)
-plt.title('Group Avg T1T2\nDelta',fontsize=10)
-plt.colorbar()
-plt.savefig(t1t2_out_dir + "groupavg.t1t2.absdiffmap.png",bbox_inches='tight', dpi = 'figure')
-
 #load rsfc for each subject
 dict_rsfc = {}
 for subj in subject_list:
@@ -64,7 +58,6 @@ for subj in subject_list:
     del rsfc
 
 #compute group avg
-n_subjects = len(dict_rsfc)
 groupavg_rsfc = dict_rsfc[str(subject_list[0])].copy()
 for subj in subject_list[1:]:
     groupavg_rsfc = np.add(groupavg_rsfc, dict_rsfc[str(subj)])
@@ -72,15 +65,9 @@ groupavg_rsfc=np.divide(groupavg_rsfc, n_subjects)
 fname = rsfc_out_dir + 'groupavg.rsfc.txt'
 np.savetxt(fname,groupavg_rsfc.astype('float32'),delimiter='\t',fmt='%f')
 
-plt.figure(figsize=(2.5,2),dpi=200)
-plt.imshow(groupavg_rsfc,vmin=-0.25,vmax=0.75)
-plt.title('Group Avg RSFC',fontsize=10)
-plt.colorbar()
-plt.savefig(rsfc_out_dir + "groupavg.rsfc.png",bbox_inches='tight', dpi = 'figure')
-
 #compute corr btwn deltaT1T2 and RSFC
-subj=100206
-template_txt = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated.t1t2.txt')
+subj=subject_list[0]
+template_txt = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated_bc.t1t2.txt')
 t1t2_rsfc_corr = np.zeros_like(template_txt)
 np.fill_diagonal(groupavg_rsfc,0.5)
 for roi in range(0,n_regions):
