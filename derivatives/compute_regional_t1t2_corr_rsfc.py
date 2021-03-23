@@ -8,6 +8,33 @@ from scipy.io import savemat
 
 df=pd.read_csv('../raw_data/merged_sorted_r277_unrelated_setA_n384.csv')
 
+def cumul(n): #thanks Gabe DG
+    if n == 0:
+        return 0
+    else:
+        return n + cumul(n-1)
+
+def unwarp_to_vector(matrix):
+    vector=np.empty([int((len(matrix)**2-len(matrix))/2)])
+    vector[0:1]=matrix[1,:1]
+    for i in range(1,len(matrix)):
+        vector[cumul(i-1):cumul(i)]=matrix[i,:i]
+    return vector
+
+def recover_matrix(FC_vector,num_roi):
+    matrix=np.zeros([num_roi, num_roi])
+    for i in range(1,num_roi):
+        matrix[i,:i]=FC_vector[cumul(i-1):cumul(i)]
+        matrix[:i,i]=FC_vector[cumul(i-1):cumul(i)]
+    np.fill_diagonal(matrix, 0)
+    return matrix
+
+def get_resids(x, y):
+    regr = LinearRegression().fit(x,y)
+    resid = y - regr.predict(x)
+    return resid.reshape(-1,1), regr.coef_ #has shape (n_samples,1)
+
+
 subject_list=df['Subject'].values 
 
 t1t2_out_dir = 't1t2/'
