@@ -129,16 +129,8 @@ fname = rsfc_out_dir + 'groupavg.rsfc_euclid.txt'
 np.savetxt(fname,groupavg_rsfc.astype('float32'),delimiter='\t',fmt='%f')
 
 
-
-#compute corr btwn deltaT1T2 and RSFC
 subj=subject_list[0]
 template_txt = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated_bc.t1t2.txt')
-t1t2_rsfc_corr = np.zeros_like(template_txt)
-np.fill_diagonal(groupavg_rsfc,0.5)
-for roi in range(0,n_regions):
-    t1t2_rsfc_corr[roi] = np.corrcoef(groupavg_rsfc[roi,:], groupavg_diffmap[roi,:])[0,1]
-
-np.savetxt(t1t2corrrsfc_out_dir + 'groupavg.regional.t1t2_corr_rsfc.txt',t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
 
 #compute micro-func relationship across subjects
 
