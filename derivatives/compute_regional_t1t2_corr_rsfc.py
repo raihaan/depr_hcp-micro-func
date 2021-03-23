@@ -157,4 +157,31 @@ np.savetxt(t1t2corrrsfc_out_dir + 'groupstd.regional.t1t2_corr_rsfc.txt',groupst
 
 grouprelstd_t1t2_rsfc_corr = np.abs(np.divide(groupstd_t1t2_rsfc_corr,groupmean_t1t2_rsfc_corr))
 np.savetxt(t1t2corrrsfc_out_dir + 'grouprelativestd.regional.t1t2_corr_rsfc.txt',grouprelstd_t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
+
+
+
+del group_t1t2_rsfc_corr
+for subj in subject_list:
+    diff_map = dict_t1t2_diffmap_euclid[str(subj)] #t1t2
+    
+    rsfc = dict_rsfc_euclid[str(subj)] #rsfc
+
+    t1t2_rsfc_corr = np.zeros_like(template_txt)
+    for roi in range(0,n_regions):
+        t1t2_rsfc_corr[roi] = np.corrcoef(diff_map[roi,:], rsfc[roi,:])[0,1]
+    np.savetxt(t1t2corrrsfc_out_dir + str(subj) + '.regional.t1t2_corr_rsfc_euclid.txt',t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
+    
+    if subj==subject_list[0]:
+        group_t1t2_rsfc_corr = t1t2_rsfc_corr.reshape(n_regions,1)
+    else:
+        group_t1t2_rsfc_corr = np.concatenate((group_t1t2_rsfc_corr,t1t2_rsfc_corr.reshape(n_regions,1)),axis=1)
+
+groupmean_t1t2_rsfc_corr = np.mean(group_t1t2_rsfc_corr,axis=1)
+np.savetxt(t1t2corrrsfc_out_dir + 'groupmean.regional.t1t2_corr_rsfc_euclid.txt',groupmean_t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
+
+groupstd_t1t2_rsfc_corr = np.std(group_t1t2_rsfc_corr,axis=1)
+np.savetxt(t1t2corrrsfc_out_dir + 'groupstd.regional.t1t2_corr_rsfc_euclid.txt',groupstd_t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
+
+grouprelstd_t1t2_rsfc_corr = np.abs(np.divide(groupstd_t1t2_rsfc_corr,groupmean_t1t2_rsfc_corr))
+np.savetxt(t1t2corrrsfc_out_dir + 'grouprelativestd.regional.t1t2_corr_rsfc_euclid.txt',grouprelstd_t1t2_rsfc_corr.astype('float32'),delimiter='\t',fmt='%f')
     
