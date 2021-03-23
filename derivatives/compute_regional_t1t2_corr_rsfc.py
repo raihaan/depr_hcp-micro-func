@@ -6,7 +6,7 @@ from matplotlib import pyplot as plt
 import scipy
 from scipy.io import savemat
 
-df=pd.read_csv('../raw_data/RESTRICTED_patelmo6_11_24_2020_11_59_6.csv')
+df=pd.read_csv('../raw_data/merged_sorted_r277_unrelated_setA_n384.csv')
 
 subject_list=df['Subject'].values 
 
