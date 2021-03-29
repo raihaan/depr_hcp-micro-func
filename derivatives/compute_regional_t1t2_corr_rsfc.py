@@ -5,6 +5,8 @@ import matplotlib as mpl
 from matplotlib import pyplot as plt
 import scipy
 from scipy.io import savemat
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 
 df=pd.read_csv('../raw_data/merged_sorted_r277_unrelated_setA_n384.csv')
 
@@ -55,10 +57,9 @@ n_regions=360
 
 #compute diff map for each subject
 for subj in subject_list:
-    t1t2 = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated_bc.t1t2.txt')
+    t1t2 = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated.t1t2_bc.txt')
     #create a diff map - abs val of delta t1t2 btwn all region pairs
     diff_map = np.zeros((n_regions,n_regions))
-    print(np.shape(diff_map))
     for seed in range(0,n_regions):
         for target in range(0,n_regions):
             diff_map[seed,target] = np.abs(t1t2[seed] - t1t2[target])
@@ -74,6 +75,8 @@ for subj in subject_list:
     y = unwarp_to_vector(diff_map).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
     diff_regresseuclid, coeff = get_resids(x,y)
     dict_t1t2_diffmap_euclid[str(subj)] = recover_matrix(diff_regresseuclid.flatten(),n_regions).copy()
+    fname = t1t2_out_dir + str(subj) + '.t1t2.absdiffmap_euclid.txt'
+    np.savetxt(fname,dict_t1t2_diffmap_euclid[str(subj)].astype('float32'),delimiter='\t',fmt='%f')
     del t1t2, diff_map
 
 #compute group avg
@@ -109,6 +112,8 @@ for subj in subject_list:
     y = unwarp_to_vector(rsfc).reshape(-1,1); x = euclid_unwrap.reshape(-1,1)
     rsfc_regresseuclid, coeff = get_resids(x,y)
     dict_rsfc_euclid[str(subj)] = recover_matrix(rsfc_regresseuclid.flatten(),n_regions).copy()
+    fname = rsfc_out_dir + str(subj) + '.rsfc_euclid.txt'
+    np.savetxt(fname,dict_rsfc_euclid[str(subj)].astype('float32'),delimiter='\t',fmt='%f')
     del rsfc
 
 #compute group avg
@@ -130,7 +135,7 @@ np.savetxt(fname,groupavg_rsfc.astype('float32'),delimiter='\t',fmt='%f')
 
 
 subj=subject_list[0]
-template_txt = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated_bc.t1t2.txt')
+template_txt = np.loadtxt('../preprocessed/' + str(subj) + '/t1t2/' + str(subj) + '.weighted.parcellated.t1t2_bc.txt')
 
 #compute micro-func relationship across subjects
 
